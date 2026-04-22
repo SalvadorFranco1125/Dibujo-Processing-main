@@ -7,7 +7,7 @@ let targetY = 240;
 let stampedBombs = [];
 
 function setup() {
-  createCanvas(640, 480);
+  createCanvas(windowWidth, windowHeight);
   video = createCapture(VIDEO);
   video.size(640, 480);
   video.hide();
@@ -70,6 +70,10 @@ function mousePressed() {
 function touchStarted() {
   stampedBombs.push(new Bomba(targetX, targetY, 300));
   return false;
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }
 
 class Bomba {
