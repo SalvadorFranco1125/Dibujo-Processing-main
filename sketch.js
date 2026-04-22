@@ -1,9 +1,10 @@
-let bombs;
+﻿let bombs;
 let video;
 let faceMesh;
 let detections = [];
 let targetX = 200;
 let targetY = 240;
+let stampedBombs = [];
 
 function setup() {
   createCanvas(640, 480);
@@ -12,7 +13,7 @@ function setup() {
   video.hide();
   faceMesh = new FaceMesh({
     locateFile: (file) => {
-      return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+      return https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/;
     }
   });
   faceMesh.setOptions({
@@ -42,15 +43,33 @@ function onResults(results) {
 
 function draw() {
   background(100, 149, 237);
+
+  push();
+  scale(-1, 1);
+  image(video, -width, 0, width, height);
+  pop();
+
   if (detections.length > 0) {
     let face = detections[0];
     let nose = face[1];
-    targetX = nose.x * width;
+    targetX = (1 - nose.x) * width;
     targetY = nose.y * height;
   }
+
   bombs[0].x = lerp(bombs[0].x, targetX, 0.1);
   bombs[0].y = lerp(bombs[0].y, targetY, 0.1);
+
+  stampedBombs.forEach(b => b.show());
   bombs.forEach(b => b.show());
+}
+
+function mousePressed() {
+  stampedBombs.push(new Bomba(targetX, targetY, 300));
+}
+
+function touchStarted() {
+  stampedBombs.push(new Bomba(targetX, targetY, 300));
+  return false;
 }
 
 class Bomba {
