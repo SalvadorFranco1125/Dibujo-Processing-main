@@ -13,7 +13,7 @@ function setup() {
   video.hide();
   faceMesh = new FaceMesh({
     locateFile: (file) => {
-      return https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/;
+      return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
     }
   });
   faceMesh.setOptions({
