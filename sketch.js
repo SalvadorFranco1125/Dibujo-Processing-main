@@ -45,7 +45,7 @@ function draw() {
   if (detections.length > 0) {
     let face = detections[0];
     let nose = face[1];
-    targetX = nose.x * width;
+    targetX = (1 - nose.x) * width;
     targetY = nose.y * height;
   }
   bombs[0].x = lerp(bombs[0].x, targetX, 0.1);
