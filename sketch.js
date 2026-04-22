@@ -1,15 +1,55 @@
 let bombs;
+let video;
+let faceMesh;
+let detections = [];
+let targetX = 200;
+let targetY = 240;
 
 function setup() {
   createCanvas(640, 480);
+  video = createCapture(VIDEO);
+  video.size(640, 480);
+  video.hide();
+  faceMesh = new FaceMesh({
+    locateFile: (file) => {
+      return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+    }
+  });
+  faceMesh.setOptions({
+    maxNumFaces: 1,
+    refineLandmarks: true,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5
+  });
+  faceMesh.onResults(onResults);
+  const camera = new Camera(video.elt, {
+    onFrame: async () => {
+      await faceMesh.send({image: video.elt});
+    },
+    width: 640,
+    height: 480
+  });
+  camera.start();
   bombs = [
-    new Bomba(200, 240, 300),
+    new Bomba(targetX, targetY, 300),
     new Bomba(440, 240, 100)
   ];
 }
 
+function onResults(results) {
+  detections = results.multiFaceLandmarks || [];
+}
+
 function draw() {
   background(100, 149, 237);
+  if (detections.length > 0) {
+    let face = detections[0];
+    let nose = face[1];
+    targetX = nose.x * width;
+    targetY = nose.y * height;
+  }
+  bombs[0].x = lerp(bombs[0].x, targetX, 0.1);
+  bombs[0].y = lerp(bombs[0].y, targetY, 0.1);
   bombs.forEach(b => b.show());
 }
 
